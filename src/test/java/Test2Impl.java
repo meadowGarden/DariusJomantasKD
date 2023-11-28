@@ -10,16 +10,16 @@ public class Test2Impl extends SecondAbtractLibraryTest {
 
     @Override
     public Library getLibrary(BookCatalog bookCatalog, FineCalculationStrategy fineCalculationStrategy) {
-        return null;
+        return new LibraryImpl(bookCatalog, fineCalculationStrategy);
     }
 
     @Override
     protected FineCalculationStrategy getFineCalculatorStrategy(BigDecimal bigDecimal) {
-        return null;
+        return new FineCalculationImpl();
     }
 
     @Override
     protected BookCatalog getBookCatalog() {
-        return null;
+        return new BookCatalogImpl();
     }
 }
