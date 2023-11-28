@@ -50,13 +50,17 @@ public class BookCatalogImpl implements BookCatalog {
     @Override
     public List<Book> searchBooksByAuthor(String s) {
 
-//        for (Book b : books) {
-//            if (b.getAuthors().contains(s)) {
-//                return b.getAuthors();
-//            }
-//        }
-
+        for (Book b : books) {
+            if (b.getAuthors().contains(s)) {
+                return b.getAuthors();
+            }
+        }
         return null;
+
+        
+
+
+
     }
 
     @Override
@@ -85,16 +89,25 @@ public class BookCatalogImpl implements BookCatalog {
     }
 
     @Override
-    public Book findNewestBookByPublisher(String s) {
+    public Book findNewestBookByPublisher(String publisher) {
+        boolean publisherFound = false;
+        for (Book b : books) {
+            if (b.getPublisher().equals(publisher)) {
+                publisherFound = true;
+            }
+        }
+
+        if (!publisherFound) {
+            throw new BookNotFoundException("book not found");
+        }
+
         Book newestBook = books.get(0);
         for (Book b : books) {
             if (b.getPublicationYear() > newestBook.getPublicationYear()) {
                 newestBook = b;
             }
         }
-
-
-        return null;
+        return newestBook;
     }
 
     @Override
