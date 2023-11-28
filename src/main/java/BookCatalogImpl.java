@@ -1,12 +1,10 @@
+import lt.techin.library.Author;
 import lt.techin.library.Book;
 import lt.techin.library.BookCatalog;
 import lt.techin.library.BookNotFoundException;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -48,19 +46,17 @@ public class BookCatalogImpl implements BookCatalog {
     }
 
     @Override
-    public List<Book> searchBooksByAuthor(String s) {
+    public List<Book> searchBooksByAuthor(String authorName) {
+        List<Book> filteredBooks = new ArrayList<>();
 
         for (Book b : books) {
-            if (b.getAuthors().contains(s)) {
-                return b.getAuthors();
+            List<Author> authors = b.getAuthors();
+            for (Author a : authors) {
+                a.getName().equals(authorName);
             }
+            filteredBooks.add(b);
         }
-        return null;
-
-        
-
-
-
+        return filteredBooks;
     }
 
     @Override
@@ -70,22 +66,14 @@ public class BookCatalogImpl implements BookCatalog {
 
     @Override
     public boolean isBookInCatalog(String isbn) {
-        for (Book b : books) {
-            if (b.getIsbn().equals(isbn)) {
-                return true;
-            }
-        }
-        return false;
+        return books.stream()
+                .anyMatch(b -> b.getIsbn().equals(isbn));
     }
 
     @Override
     public boolean isBookAvailable(String isbn) {
-        for (Book b : books) {
-            if (b.isAvailable()) {
-                return true;
-            }
-        }
-        return false;
+        return books.stream()
+                .anyMatch(Book::isAvailable);
     }
 
     @Override
@@ -136,4 +124,9 @@ public class BookCatalogImpl implements BookCatalog {
                 .map(p -> p.getPrice())
                 .reduce(BigDecimal.ZERO, (a, b) -> a.add(b));
     }
+
+
+
+
+
 }
