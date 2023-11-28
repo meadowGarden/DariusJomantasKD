@@ -100,8 +100,14 @@ public class BookCatalogImpl implements BookCatalog {
 
     @Override
     public List<Book> getSortedBooks() {
+
+        Comparator<Book> newComparator = Comparator
+                                        .comparing(Book::getPublicationYear)
+                                        .thenComparing(Book::getTitle)
+                                        .thenComparing(Book::getPageCount);
+
         return books.stream()
-                .sorted()
+                .sorted(newComparator)
                 .collect(Collectors.toList());
     }
 
@@ -121,12 +127,15 @@ public class BookCatalogImpl implements BookCatalog {
     @Override
     public BigDecimal calculateTotalPrice() {
         return books.stream()
-                .map(p -> p.getPrice())
-                .reduce(BigDecimal.ZERO, (a, b) -> a.add(b));
+                .map(Book::getPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
 
-
-
+    public List<Book> filterByPageCount(int pageCount) {
+        return books.stream()
+                .filter(b -> b.getPageCount() >= pageCount)
+                .collect(Collectors.toList());
+    }
 
 }
