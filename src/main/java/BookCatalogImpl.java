@@ -28,11 +28,10 @@ public class BookCatalogImpl implements BookCatalog {
             books.add(book);
         }
 
-        for (Book b : books) {
-            if (!b.getIsbn().equals(book.getIsbn())) {
-                books.add(book);
-            }
+        if (!books.contains(book)) {
+            books.add(book);
         }
+
     }
 
     @Override
