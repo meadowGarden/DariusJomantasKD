@@ -12,7 +12,7 @@ public class LibraryImpl implements Library {
 
     List<LibraryMember> members;
 
-
+    List<BorrowInfo> borrowLog;
     BookCatalog bookCatalog;
     FineCalculationStrategy fineCalculationStrategy;
 
@@ -20,8 +20,8 @@ public class LibraryImpl implements Library {
         this.bookCatalog = bookCatalog;
         this.fineCalculationStrategy = fineCalculationStrategy;
         this.members = new ArrayList<>();
+        this.borrowLog = new ArrayList<>();
     }
-
 
     @Override
     public void addBookToCatalog(Book book) {
@@ -33,7 +33,9 @@ public class LibraryImpl implements Library {
         if (libraryMember.getMemberId() == null ||
                 libraryMember.getMemberId().isEmpty() ||
                 libraryMember.getName() == null ||
-                libraryMember.getName().isEmpty()) {
+                libraryMember.getName().isEmpty() ||
+                LocalDate.now().isBefore(libraryMember.getDateOfBirth())
+        ) {
             throw new IllegalArgumentException();
         }
         members.add(libraryMember);
@@ -42,14 +44,21 @@ public class LibraryImpl implements Library {
     @Override
     public Book getBookByIsbn(String isbn) {
         if (isbn == null || isbn.isEmpty()) {
-            throw new IllegalArgumentException();
+            throw new BookNotFoundException("book not found");
         }
         return  bookCatalog.getBookByIsbn(isbn);
     }
 
     @Override
-    public void borrowBook(String s, String s1) {
+    public void borrowBook(String memberId, String isbn) {
 
+        if (memberId == null || memberId.isEmpty() || !bookCatalog.isBookAvailable(isbn)) {
+            throw new IllegalArgumentException();
+        }
+
+        for (LibraryMember m : members) {
+            m.borrowBook(getBookByIsbn(isbn));
+        }
     }
 
     @Override
@@ -75,10 +84,10 @@ public class LibraryImpl implements Library {
     }
 
     @Override
-    public List<LibraryMember> getUnderAgeMembers(int i) {
-//        return members.stream()
-//                .filter(m -> m.getDateOfBirth());
-        return null;
+    public List<LibraryMember> getUnderAgeMembers(int ageLimit) {
+        return members.stream()
+                .filter(m -> (LocalDate.now().getYear() - m.getDateOfBirth().getYear()) <= 18)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -89,6 +98,7 @@ public class LibraryImpl implements Library {
 
     @Override
     public void addBookToCatalog(OldBook oldBook) {
+//        bookCatalog.addBook(new BookAdapter(oldBook));
 
     }
 }
